@@ -1,7 +1,6 @@
 import parseCSV from './csv'
 
-
-describe('Basic CSV Functionality', () => {
+describe('Basic One Row', () => {
   it('empty', () => {
     const input = ''
     const output = [['']]
@@ -9,122 +8,56 @@ describe('Basic CSV Functionality', () => {
     expect(parseCSV(input)).toMatchObject(output)
   })
 
-  it('empty values', () => {
-    const input = ',,'
-    const output = [['', '', '']]
-
-    expect(parseCSV(input)).toMatchObject(output)
-  })
-
-  it('single value', () => {
+  it('single 1 character value', () => {
     const input = '1'
     const output = [['1']]
 
     expect(parseCSV(input)).toMatchObject(output)
   })
 
-  it('single complex value', () => {
-    const input = 'one'
-    const output = [['one']]
+  it('single multi characters value', () => {
+    const input = 'hello'
+    const output = [['hello']]
 
     expect(parseCSV(input)).toMatchObject(output)
   })
 
-  it('multi values', () => {
+  it('multi single character value', () => {
     const input = '1,2,3'
     const output = [['1', '2', '3']]
 
     expect(parseCSV(input)).toMatchObject(output)
   })
 
-  it('multi complex values', () => {
-    const input = 'one,two,3,four'
-    const output = [['one', 'two', '3', 'four']]
-
-    expect(parseCSV(input)).toMatchObject(output)
-  })
-
-  it('multi lines', () => {
-    const input = '1\n2\n3'
-    const output = [['1'], ['2'], ['3']]
-
-    expect(parseCSV(input)).toMatchObject(output)
-  })
-
-  it('multi complex lines', () => {
-    const input = '1,2,three\none\ntwo\n3\nfour'
-    const output = [['1', '2', 'three'], ['one'], ['two'], ['3'], ['four']]
+  it('complex multi character value', () => {
+    const input = 'hello,world,mojtaba'
+    const output = [['hello','world','mojtaba']]
 
     expect(parseCSV(input)).toMatchObject(output)
   })
 })
 
-describe('Quoted Values', () => {
-  it('simple quote', () => {
+describe('Basic Multi Rows', () => {
+  it('basic multi rows', () => {
+    const input = 'aa\nbb'
+    const output = [['aa'], ['bb']]
+
+    expect(parseCSV(input)).toMatchObject(output)
+  })
+
+  it('complex multi rows', () => {
+    const input = 'hello,world,aa\nbb,javascript'
+    const output = [['hello', 'world', 'aa'], ['bb', 'javascript']]
+
+    expect(parseCSV(input)).toMatchObject(output)
+  })
+})
+
+describe('Basic Quoted Fields', () => {
+  it('basic quoted values', () => {
     const input = '"one"'
-    const output = [["one"]]
+    const output = [['one']]
 
     expect(parseCSV(input)).toMatchObject(output)
-  })
-
-  it('simple multi quote values', () => {
-    const input = '"one",2,"three"'
-    const output = [["one", '2', 'three']]
-
-    expect(parseCSV(input)).toMatchObject(output)
-  })
-
-  it('quote with new lines', () => {
-    const input = '"one"\n"two"'
-    const output = [['one'], ['two']]
-
-    expect(parseCSV(input)).toMatchObject(output)
-  })
-
-  it('multi quote with new lines', () => {
-    const input = '1,"two",3,"four"\n"one",2,"three",4'
-    const output = [['1', 'two', '3', 'four'], ['one', '2', 'three', '4']]
-
-    expect(parseCSV(input)).toMatchObject(output)
-  })
-
-  it('quote with new lines inside', () => {
-    const input = '"one\ntwo"'
-    const output = [['one\ntwo']]
-
-    expect(parseCSV(input)).toMatchObject(output)
-  })
-})
-
-
-describe('Nested Quoted Values', () => {
-  it('simple nested quote', () => {
-    const input = '"one ""two"" three"'
-    const output = [['one "two" three']]
-
-    expect(parseCSV(input)).toMatchObject(output)
-  })
-})
-
-describe('Alternate Quoted Values', () => {
-  it('single quote', () => {
-    const input = "'one ''f'' '' '"
-    const output = [["one 'f' ' "]]
-
-    expect(parseCSV(input, null, "'")).toMatchObject(output)
-  })
-
-  it('dollar sign', () => {
-    const input = "a,$string$,using $$ as the quote"
-    const output = [['a', 'string', 'using $ as the quote']]
-
-    expect(parseCSV(input, null, "$")).toMatchObject(output)
-  })
-
-  it('backslash', () => {
-    const input = "a,\\string\\,using \\\\ as the quote"
-    const output = [['a', 'string', 'using \\ as the quote']]
-
-    expect(parseCSV(input, null, "\\")).toMatchObject(output)
   })
 })

@@ -13,100 +13,62 @@ export default function parseCSV(input, separator, quote) {
   quote = quote || '"'
   
   // the final return array which contains arrays (for each row)
-  let result = [
-    [ ]
-  ]
+  let result = []
+  
+  // we'll create an object for each character
+  // which store its behavior
+  let characters = []
 
-  // this flag determines if we are on quoted string or not
-  let inQuote = false
-  let nestedQuote = false
-
-  // loop through each character of input
-  let value = []
-  let row = result[ result.length - 1 ]
-
-  for (let i = 0; i < input.length; i++) {
-    // save the character inside a constant
-    const char = input[i]
-
-    if (! nestedQuote) {
-      if (! inQuote) {
-        if (char == quote) {
-          inQuote = true
-          continue
-        }
-
-        // check for newlines
-        if (char == '\n') {
-          row.push( value.join('') )
-          value = []
-
-          result.push([])
-          row = result[ result.length - 1 ]
-        }
-
-        else {
-          // if the character isn't separator, add it to the current row
-          if (char != separator) {
-            value.push(char)
-          }
-
-          // we faced with separator
-          else {
-            row.push( value.join('') )
-            value = []
-          }
-        }
-      }
-      
-      // we faced with quoted string
-      else {
-        if (char == quote) {
-          if (typeof input[i + 1] != typeof undefined) {
-            if (input[i + 1] == quote) {
-              nestedQuote = true
-              value.push(quote)
-            }
-            else {
-              if (input[i + 1] == separator) {
-                // row.push( value.join('') )
-                // value = []
-                inQuote = false
-                // nestedQuote = false
-              }
-              else if (input[i + 1] == '\n') {
-                inQuote = false
-                // result.push([])
-                // row = result[ result.length - 1 ]
-              }
-              else {
-                value.push(char)
-              }
-            }
-          }
-        }
-        
-        else {
-          value.push(char)
-        }
-      }
+  for (let i = -1; i < input.length; i++) {
+    if (i == -1) {
+      characters.push({ type: 'newRow' })
+      characters.push({ type: 'newCol' })
+      continue
     }
+
+    let char = input[i]
+
+    if (char == separator) {
+      characters.push({ type: 'newCol' })
+    }
+
+    else if (char == '\n') {
+      characters.push({ type: 'newRow' })
+      characters.push({ type: 'newCol' })
+    }
+
     else {
-      if (char == quote) {
-        if (typeof input[i + 1] != typeof undefined) {
-          if (input[i + 1] == quote) {
-            nestedQuote = false
-            // value.push(quote)
-          }
-        }
-      }
-      else {
-        value.push(char)
-      }
+      characters.push({
+        type: 'character',
+        key: char
+      })
     }
   }
 
-  row.push( value.join('') )
+
+  // loop through characters
+  for (let i = 0; i < characters.length; i++) {
+    let char = characters[i]
+
+    if (char.type == 'newRow') {
+      result.push([])
+    }
+
+    else if (char.type == 'newCol') {
+      result[ result.length - 1 ].push('')
+    }
+
+    else {
+      // all rows
+      result
+        // last row
+        [ result.length - 1 ]
+        // last column
+        [ result[ result.length - 1 ].length - 1 ] += char.key
+    }
+  }
+
+  // console.log(characters)
   
   return result
 }
