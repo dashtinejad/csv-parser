@@ -99,9 +99,32 @@ describe('Quoted Values', () => {
 
 describe('Nested Quoted Values', () => {
   it('simple nested quote', () => {
-    const input = '"one \"\"two\"\" three'
+    const input = '"one ""two"" three"'
     const output = [['one "two" three']]
 
     expect(parseCSV(input)).toMatchObject(output)
+  })
+})
+
+describe('Alternate Quoted Values', () => {
+  it('single quote', () => {
+    const input = "'one ''f'' '' '"
+    const output = [["one 'f' ' "]]
+
+    expect(parseCSV(input, null, "'")).toMatchObject(output)
+  })
+
+  it('dollar sign', () => {
+    const input = "a,$string$,using $$ as the quote"
+    const output = [['a', 'string', 'using $ as the quote']]
+
+    expect(parseCSV(input, null, "$")).toMatchObject(output)
+  })
+
+  it('backslash', () => {
+    const input = "a,\\string\\,using \\\\ as the quote"
+    const output = [['a', 'string', 'using \\ as the quote']]
+
+    expect(parseCSV(input, null, "\\")).toMatchObject(output)
   })
 })

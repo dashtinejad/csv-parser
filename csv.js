@@ -19,6 +19,7 @@ export default function parseCSV(input, separator, quote) {
 
   // this flag determines if we are on quoted string or not
   let inQuote = false
+  let nestedQuote = false
 
   // loop through each character of input
   let value = []
@@ -28,58 +29,79 @@ export default function parseCSV(input, separator, quote) {
     // save the character inside a constant
     const char = input[i]
 
-    if (! inQuote) {
-      if (char == quote) {
-        inQuote = true
-        continue
-      }
-
-      // check for newlines
-      if (char == '\n') {
-        row.push( value.join('') )
-        value = []
-
-        result.push([])
-        row = result[ result.length - 1 ]
-      }
-
-      else {
-        // if the character isn't separator, add it to the current row
-        if (char != separator) {
-          value.push(char)
+    if (! nestedQuote) {
+      if (! inQuote) {
+        if (char == quote) {
+          inQuote = true
+          continue
         }
 
-        // we faced with separator
-        else {
+        // check for newlines
+        if (char == '\n') {
           row.push( value.join('') )
           value = []
+
+          result.push([])
+          row = result[ result.length - 1 ]
+        }
+
+        else {
+          // if the character isn't separator, add it to the current row
+          if (char != separator) {
+            value.push(char)
+          }
+
+          // we faced with separator
+          else {
+            row.push( value.join('') )
+            value = []
+          }
+        }
+      }
+      
+      // we faced with quoted string
+      else {
+        if (char == quote) {
+          if (typeof input[i + 1] != typeof undefined) {
+            if (input[i + 1] == quote) {
+              nestedQuote = true
+              value.push(quote)
+            }
+            else {
+              if (input[i + 1] == separator) {
+                // row.push( value.join('') )
+                // value = []
+                inQuote = false
+                // nestedQuote = false
+              }
+              else if (input[i + 1] == '\n') {
+                inQuote = false
+                // result.push([])
+                // row = result[ result.length - 1 ]
+              }
+              else {
+                value.push(char)
+              }
+            }
+          }
+        }
+        
+        else {
+          value.push(char)
         }
       }
     }
-    
-    // we faced with quoted string
     else {
       if (char == quote) {
         if (typeof input[i + 1] != typeof undefined) {
           if (input[i + 1] == quote) {
-            value.push(quote)
+            nestedQuote = false
+            // value.push(quote)
           }
         }
-
-        inQuote = false
       }
-      
       else {
-        // if the character isn't separator, add it to the current row
-        if (char != separator) {
-          value.push(char)
-        }
-
-        // we faced with separator
-        else {
-          row.push( value.join('') )
-          value = []
-        }
+        value.push(char)
       }
     }
   }
