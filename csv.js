@@ -9,8 +9,11 @@
  *        Defaults to "\"".
  */
 export default function parseCSV(input, separator, quote) {
-  separator = separator || ','
-  quote = quote || '"'
+  const NEWLINE = '\n'
+  const SEPARATOR = separator || ','
+  const QUOTE = quote || '"'
+  const NEWROW = 'NEWROW'
+  const NEWCOL = 'NEWCOL'
   
   // the final return array which contains arrays (for each row)
   let result = []
@@ -21,20 +24,20 @@ export default function parseCSV(input, separator, quote) {
 
   for (let i = -1; i < input.length; i++) {
     if (i == -1) {
-      characters.push({ type: 'newRow' })
-      characters.push({ type: 'newCol' })
+      characters.push({ type: NEWROW })
+      characters.push({ type: NEWCOL })
       continue
     }
 
     let char = input[i]
 
-    if (char == separator) {
-      characters.push({ type: 'newCol' })
+    if (char == SEPARATOR) {
+      characters.push({ type: NEWCOL })
     }
 
-    else if (char == '\n') {
-      characters.push({ type: 'newRow' })
-      characters.push({ type: 'newCol' })
+    else if (char == NEWLINE) {
+      characters.push({ type: NEWROW })
+      characters.push({ type: NEWCOL })
     }
 
     else {
@@ -50,11 +53,11 @@ export default function parseCSV(input, separator, quote) {
   for (let i = 0; i < characters.length; i++) {
     let char = characters[i]
 
-    if (char.type == 'newRow') {
+    if (char.type == NEWROW) {
       result.push([])
     }
 
-    else if (char.type == 'newCol') {
+    else if (char.type == NEWCOL) {
       result[ result.length - 1 ].push('')
     }
 
