@@ -93,9 +93,57 @@ describe('Complex Quoted Fields', () => {
 })
 
 describe('Nested quoted fields', () => {
-  it('newline inside value', () => {
+  it('simple nested quote', () => {
     const input = '"one ""two"" three"'
     const output = [['one "two" three']]
+
+    expect(parseCSV(input)).toMatchObject(output)
+  })
+
+  it('nested quote at the end', () => {
+    const input = '1,"two ""quoted"""'
+    const output = [['1', 'two "quoted"']]
+
+    expect(parseCSV(input)).toMatchObject(output)
+  })
+
+  it('nested quote at the beginning', () => {
+    const input = '"""quoted"" value"'
+    const output = [['"quoted" value']]
+
+    expect(parseCSV(input)).toMatchObject(output)
+  })
+})
+
+describe('Nested quoted with special characters', () => {
+  it('new lines inside quoted values', () => {
+    const input = '1,2,"3,three"\n4,5,6'
+    const output = [['1', '2', '3,three'], ['4', '5', '6']]
+
+    expect(parseCSV(input)).toMatchObject(output)
+  })
+
+  it('complex new lines inside quoted values', () => {
+    const input = '1,2,3\n4,"this ""is""\na test",6'
+    const output = [['1', '2', '3'], ['4', 'this "is"\na test', '6']]
+
+    expect(parseCSV(input)).toMatchObject(output)
+  })
+})
+
+describe('Special Nested quotes', () => {
+  it('empty quotes', () => {
+    const input = '1,"",3'
+    const output = [['1', '', '3']]
+
+    expect(parseCSV(input)).toMatchObject(output)
+  })
+})
+
+describe('another nested quotes', () => {
+  it('nested ones', () => {
+    const input = '1,"two ""quote""",3'
+    const output = [['1', 'two "quote"', '3']]
 
     expect(parseCSV(input)).toMatchObject(output)
   })
