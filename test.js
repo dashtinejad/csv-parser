@@ -92,3 +92,11 @@ describe('Complex Quoted Fields', () => {
   })
 })
 
+describe('Nested quoted fields', () => {
+  it('newline inside value', () => {
+    const input = '"one ""two"" three"'
+    const output = [['one "two" three']]
+
+    expect(parseCSV(input)).toMatchObject(output)
+  })
+})

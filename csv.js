@@ -48,10 +48,12 @@ export default function parseCSV(input, separator, quote) {
           })
         }
 
-        // the character is the end quote
+        // the character could be the end quote
         // make the flag false
         else {
-          inQuote = false
+          if (input[i + 1] == SEPARATOR) {
+            inQuote = false
+          }
         }
       }
 
