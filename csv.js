@@ -19,8 +19,11 @@ export default function parseCSV(input, separator, quote) {
   let result = []
   
   // we'll create an object for each character
-  // which store its behavior
+  // which store its behavior, it's a map for our rendering
   let characters = []
+
+  // this flag identify if we are in quoted string
+  let inQuote = false
 
   for (let i = -1; i < input.length; i++) {
     if (i == -1) {
@@ -31,7 +34,45 @@ export default function parseCSV(input, separator, quote) {
 
     let char = input[i]
 
-    if (char == SEPARATOR) {
+    if (inQuote) {
+      if (char == QUOTE) {
+        // we already inside a quote
+        // this character can behave in 2 ways for us:
+        // -- nested quote "foo "baz" bar"
+        // -- end quote "foo"
+        // we should identify that
+        if (input[i + 1] == QUOTE) {
+          characters.push({
+            type: 'character',
+            key: QUOTE
+          })
+        }
+
+        // the character is the end quote
+        // make the flag false
+        else {
+          inQuote = false
+        }
+      }
+
+      // other wise, every character inside the quoted
+      // should be consider at normal character
+      // especially SEPARATOR and NEWLINE characers
+      else {
+        characters.push({
+          type: 'character',
+          key: char
+        })
+      }
+
+      continue
+    }
+
+    if (char == QUOTE) {
+      inQuote = true
+    }
+
+    else if (char == SEPARATOR) {
       characters.push({ type: NEWCOL })
     }
 

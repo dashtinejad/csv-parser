@@ -54,10 +54,41 @@ describe('Basic Multi Rows', () => {
 })
 
 describe('Basic Quoted Fields', () => {
-  it('basic quoted values', () => {
+  it('basic quoted single value', () => {
     const input = '"one"'
     const output = [['one']]
 
     expect(parseCSV(input)).toMatchObject(output)
   })
+
+  it('basic quoted multi values (quoted values at the beginning and end)', () => {
+    const input = '"one",2,"two"'
+    const output = [['one', '2', 'two']]
+
+    expect(parseCSV(input)).toMatchObject(output)
+  })
+
+  it('basic quoted multi values (no quoted at the end)', () => {
+    const input = '"one",2'
+    const output = [['one', '2']]
+
+    expect(parseCSV(input)).toMatchObject(output)
+  })
+
+  it('basic quoted multi values (no quoted at the beginning)', () => {
+    const input = '1,"two"'
+    const output = [['1', 'two']]
+
+    expect(parseCSV(input)).toMatchObject(output)
+  })
 })
+
+describe('Complex Quoted Fields', () => {
+  it('separator inside value', () => {
+    const input = '"one,two"'
+    const output = [['one,two']]
+
+    expect(parseCSV(input)).toMatchObject(output)
+  })
+})
+
