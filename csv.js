@@ -49,7 +49,7 @@ export default function parseCSV(input, separator, quote) {
 
     // we have two situations: we are already in quote value or not
     // this block will handle characters if we are in quote
-    // at the end of this block, there is a `return` statement
+    // at the end of this block, there is a `continue` statement
     // so no need to put the rest of code inside `else` block
     if (inQuote) {
       if (char == QUOTE) {
